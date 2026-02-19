@@ -78,7 +78,7 @@ Gen-AI---Capstone/
 
 ---
 
-## 🏗️ High-Level Architecture
+## 🏗️ Architecture
 
 ```
 ┌─────────────────┐
