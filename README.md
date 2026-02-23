@@ -94,11 +94,7 @@ Gen-AI---Capstone/
 
 ## 🏗️ Architecture
 
-```
-
 ![System Design](assets/system_design.png)
-
-```
 
 **Flow:**
 1. **Data ingestion** from `housing.csv`
