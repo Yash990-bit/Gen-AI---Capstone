@@ -38,7 +38,11 @@ The platform combines comprehensive data engineering (outlier removal, feature e
 ## Screenshots
 
 ![Platform View 1](assets/image1.png)
+
+
 <br/>
+
+
 ![Platform View 2](assets/image2.png)
 
 ## 🌐 Live Services
@@ -92,7 +96,7 @@ Gen-AI---Capstone/
 
 ```
 
-![System Design](assets/SystemDesign.png)
+![System Design](assets/system_design.png)
 
 ```
 
