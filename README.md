@@ -35,7 +35,7 @@ The platform combines comprehensive data engineering (outlier removal, feature e
 
 | Layer        | Platform   | Link                        |
 |--------------|------------|-----------------------------|
-| Application  | Streamlit  | *Deploy to Streamlit Cloud* |
+| Application  | Streamlit  | [https://yash990-bit-gen-ai---capstone-app-hrepbz.streamlit.app/]
 | Repository   | GitHub     | [Gen-AI---Capstone](https://github.com/Yash990-bit/Gen-AI---Capstone) |
 
 ---
