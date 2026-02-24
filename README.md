@@ -302,7 +302,7 @@ No formal test suite is included. To validate the model:
 
 ### **Main Contributors**
 - **Yash** — [@Yash990-bit](https://github.com/Yash990-bit)
-- **Om** — [@Yash990-bit](https://github.com/Silence91169)
+- **Shitanshu** — [@Silence91169](https://github.com/Silence91169)
 
 ---
 
