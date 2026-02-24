@@ -12,7 +12,6 @@
 <br/>
 
 
-
 **Institutional-grade property valuations powered by Random Forest ML**
 
 [Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [Architecture](#-high-level-architecture) • [Roadmap](#-roadmap)
@@ -49,7 +48,7 @@ The platform combines comprehensive data engineering (outlier removal, feature e
 
 | Layer        | Platform   | Link                        |
 |--------------|------------|-----------------------------|
-| Application  | Streamlit  | [https://yash990-bit-gen-ai---capstone-app-hrepbz.streamlit.app/]
+| Application  | Streamlit  | https://geo-val.streamlit.app/ |
 | Repository   | GitHub     | [Gen-AI---Capstone](https://github.com/Yash990-bit/Gen-AI---Capstone) |
 
 ---
@@ -303,12 +302,10 @@ No formal test suite is included. To validate the model:
 ### **Main Contributors**
 - **Yash** — [@Yash990-bit](https://github.com/Yash990-bit)
 - **Shitanshu** — [@Silence91169](https://github.com/Silence91169)
+- **Shivam** — [@ShivamDixit20](https://github.com/ShivamDixit20)
 
 ---
 
-## 📄 License
-
-This project is licensed under the MIT License.
 
 ---
 
