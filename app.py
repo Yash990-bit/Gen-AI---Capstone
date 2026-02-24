@@ -2,6 +2,8 @@ import streamlit as st
 import pickle
 import numpy as np
 import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
 
 st.set_page_config(
     page_title="PropAI: Intelligent Real Estate",
@@ -49,13 +51,13 @@ model, label_encoder, columns = load_artifacts()
 if model is not None:
     locations = list(label_encoder.classes_)
     
-    st.title("🏢 Intelligent Property Price Prediction")
+    st.title("         🏢 Intelligent Property Price Prediction")
     st.markdown("### AI-Powered Real Estate Analytics", help="Get market value estimates based on Bangalore dataset.")
     
     col1, col_gap, col2 = st.columns([1.2, 0.1, 1.7])
     
     with col1:
-        st.markdown("#### 🏡 Property Details")
+        st.markdown("#### 🏠Property Details")
         st.markdown("<p style='color: #888; font-size: 0.9em; margin-top: -10px;'>Adjust the parameters below:</p>", unsafe_allow_html=True)
         
         location = st.selectbox("📍 Location", sorted(locations))
@@ -71,7 +73,7 @@ if model is not None:
         predict_clicked = st.button("Predict Price", type="primary", use_container_width=True)
 
     with col2:
-        tab1, tab2 = st.tabs(["💰 Valuation", "📊 Insights"])
+        tab1, tab2 = st.tabs(["💵 Valuation", "📊 Insights"])
         with tab1:
             if predict_clicked:
                 try:
@@ -113,11 +115,28 @@ if model is not None:
                     st.write("---")
                     st.markdown("##### Price Sensitivity")
                     st.caption("How changing BHK/Bath affects the price for this Square Footage:")
-                    custom_colors = ["#00e676", "#18ffff", "#e040fb", "#ffeb3b", "#ff5252", "#1e88e5"]
-                    st.line_chart(
-                        sens_df.pivot(index="BHK", columns="Bath", values="Price"),
-                        color=custom_colors[:len(sens_df["Bath"].unique())]
+                    # Improved interactive sensitivity chart using Plotly
+                    custom_colors = ["#034625", "#0d9696", "#c808ea", "#a99a16", "#A40909", "#0f6cbd"]
+                    # Ensure Bath is treated as a category for separate lines
+                    sens_df['Bath'] = sens_df['Bath'].astype(str)
+                    fig_sens = px.line(
+                        sens_df,
+                        x='BHK',
+                        y='Price',
+                        color='Bath',
+                        markers=True,
+                        color_discrete_sequence=custom_colors,
+                        labels={'Price': 'Estimated Price (Lakhs)', 'BHK': 'Bedrooms (BHK)', 'Bath': 'Bathrooms'}
                     )
+                    fig_sens.update_layout(
+                        title='Price Sensitivity by BHK and Bath',
+                        legend_title='Bathrooms',
+                        template='plotly_dark',
+                        hovermode='x unified'
+                    )
+                    # Format hover to show currency and nicer numbers
+                    fig_sens.update_traces(hovertemplate='BHK: %{x}<br>Bath: %{legendgroup}<br>Price: ₹ %{y:.2f} Lakhs')
+                    st.plotly_chart(fig_sens, use_container_width=True)
                     st.caption("Note: Square Footage and Location have the highest impact. BHK/Bath shifts are more subtle.")
             else:
                 st.markdown(
@@ -146,12 +165,25 @@ if model is not None:
                     'Weight (%)': model.feature_importances_ * 100
                 }).sort_values(by='Weight (%)', ascending=False)
                 
-                st.bar_chart(importance_df.set_index('Factor'))
-                
+                # Interactive horizontal bar chart for feature importances
+                importance_df_sorted = importance_df.sort_values('Weight (%)', ascending=True)
+                fig_imp = px.bar(
+                    importance_df_sorted,
+                    x='Weight (%)',
+                    y='Factor',
+                    orientation='h',
+                    color='Weight (%)',
+                    color_continuous_scale='Viridis',
+                    labels={'Weight (%)': 'Importance (%)', 'Factor': 'Feature'}
+                )
+                fig_imp.update_layout(title='Feature Importances', template='plotly_dark', xaxis_title='Importance (%)', yaxis_title='')
+                fig_imp.update_traces(marker_line_color='rgba(0,0,0,0.3)', marker_line_width=1, hovertemplate='%{y}: %{x:.1f}%')
+                st.plotly_chart(fig_imp, use_container_width=True)
+
                 with st.expander("Impact Breakdown"):
                     for _, row in importance_df.iterrows():
                         st.write(f"- **{row['Factor'].replace('_', ' ').title()}**: {row['Weight (%)']:.1f}% impact")
                 
-                st.info("💡 **Insight:** Total Sqft is the most critical factor. This is why price doesn't change drastically when only BHK or Bathrooms are adjusted without changing the area.")
+                st.info("💡 **Insight:** Total Square ft is the most critical factor. This is why price doesn't change drastically when only BHK or Bathrooms are adjusted without changing the area.")
             else:
-                st.info("Feature importance not available.")
+                st.info("Feature importance is not available.")
