@@ -9,6 +9,10 @@
 ![Plotly](https://img.shields.io/badge/Plotly-3F4F75?style=for-the-badge&logo=plotly&logoColor=white)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)
 
+<br/>
+
+
+
 **Institutional-grade property valuations powered by Random Forest ML**
 
 [Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [Architecture](#-high-level-architecture) • [Roadmap](#-roadmap)
@@ -30,6 +34,16 @@ The platform combines comprehensive data engineering (outlier removal, feature e
 - 🚀 Real-time valuation with market-range estimates (low/high bounds)
 
 ---
+
+## Screenshots
+
+![Platform View 1](assets/image1.png)
+
+
+<br/>
+
+
+![Platform View 2](assets/image2.png)
 
 ## 🌐 Live Services
 
@@ -80,75 +94,7 @@ Gen-AI---Capstone/
 
 ## 🏗️ Architecture
 
-```
-┌─────────────────┐
-│  Data Layer     │
-│  housing.csv    │
-│  (13,320 rows)  │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────────────────────────┐
-│  Feature Engineering Pipeline       │
-│  • Outlier removal (price/sqft)    │
-│  • Area range conversion            │
-│  • BHK extraction                   │
-│  • Location encoding (242 classes) │
-└────────┬────────────────────────────┘
-         │
-         ▼
-┌─────────────────────────────────────┐
-│  ML Training Layer                  │
-│  • Random Forest (100 estimators)   │
-│  • Train/test split (80/20)        │
-│  • Feature: location, sqft, bhk,   │
-│    bath                             │
-│  • Target: price (Lakhs)           │
-└────────┬────────────────────────────┘
-         │
-         ▼
-┌─────────────────────────────────────┐
-│  Serialized Artifacts               │
-│  • trained_model.pkl                │
-│  • label_encoder.pkl                │
-│  • columns.pkl                      │
-└────────┬────────────────────────────┘
-         │
-         ▼
-┌─────────────────────────────────────┐
-│  Streamlit Application (app.py)     │
-│  ┌─────────────────────────────┐   │
-│  │  Frontend Layer             │   │
-│  │  • Home (Hero + Features)   │   │
-│  │  • Dashboard (Metrics)      │   │
-│  │  • AI Valuation (Input UI)  │   │
-│  │  • Analytics (Insights)     │   │
-│  └─────────────────────────────┘   │
-│  ┌─────────────────────────────┐   │
-│  │  Prediction Engine          │   │
-│  │  • Load pickled models      │   │
-│  │  • Transform user inputs    │   │
-│  │  • Generate predictions     │   │
-│  │  • Calculate confidence     │   │
-│  │    bands (±10%)             │   │
-│  └─────────────────────────────┘   │
-│  ┌─────────────────────────────┐   │
-│  │  Visualization Layer        │   │
-│  │  • Plotly sensitivity charts│   │
-│  │  • Feature importance bars  │   │
-│  │  • Metric cards & KPIs      │   │
-│  └─────────────────────────────┘   │
-└─────────────────────────────────────┘
-         │
-         ▼
-┌─────────────────────────────────────┐
-│  User Interface                     │
-│  • Property configuration sidebar   │
-│  • Real-time valuation display     │
-│  • Interactive price sensitivity   │
-│  • Market intelligence dashboard   │
-└─────────────────────────────────────┘
-```
+![System Design](assets/system_design.png)
 
 **Flow:**
 1. **Data ingestion** from `housing.csv`
@@ -213,7 +159,7 @@ Gen-AI---Capstone/
 2. **Create virtual environment** *(optional but recommended)*
    ```bash
    python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   source venv/bin/activate  
    ```
 
 3. **Install dependencies**
@@ -299,11 +245,10 @@ This project does not require environment variables. All configurations are hard
 import pickle
 import numpy as np
 
-# Load artifacts
+
 model = pickle.load(open('models/trained_model.pkl', 'rb'))
 label_encoder = pickle.load(open('models/label_encoder.pkl', 'rb'))
 
-# Prepare input
 location = 'Whitefield'
 total_sqft = 1200
 bath = 2
@@ -312,7 +257,6 @@ bhk = 3
 loc_encoded = label_encoder.transform([location])[0]
 features = np.array([[loc_encoded, total_sqft, bath, bhk]])
 
-# Predict
 prediction = model.predict(features)[0]
 print(f"Predicted Price: ₹{prediction:.2f} Lakhs")
 ```
