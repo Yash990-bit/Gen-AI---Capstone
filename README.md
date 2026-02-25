@@ -303,6 +303,7 @@ No formal test suite is included. To validate the model:
 - **Yash** — [@Yash990-bit](https://github.com/Yash990-bit)
 - **Shitanshu** — [@Silence91169](https://github.com/Silence91169)
 - **Shivam** — [@ShivamDixit20](https://github.com/ShivamDixit20)
+- **Shivam** — [@keshavgoel2101](https://github.com/keshavgoel2101)
 
 ---
 
