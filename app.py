@@ -41,14 +41,18 @@ def load_artifacts():
         model = pickle.load(open('models/trained_model.pkl', 'rb'))
         label_encoder = pickle.load(open('models/label_encoder.pkl', 'rb'))
         columns = pickle.load(open('models/columns.pkl', 'rb'))
-        return model, label_encoder, columns
+        # Attempt to load a Decision Tree model if it exists
+        try:
+            dt_model = pickle.load(open('models/decision_tree_model.pkl', 'rb'))
+        except FileNotFoundError:
+            dt_model = None
+        return model, dt_model, label_encoder, columns
     except FileNotFoundError:
         st.error("Model files not found. Please run the training notebook first.")
-        return None, None, None
+        return None, None, None, None
+model, dt_model, label_encoder, columns = load_artifacts()
 
-model, label_encoder, columns = load_artifacts()
-
-if model is not None:
+if label_encoder is not None and columns is not None:
     locations = list(label_encoder.classes_)
     
     st.title("         🏢 Intelligent Property Price Prediction")
@@ -59,8 +63,14 @@ if model is not None:
     with col1:
         st.markdown("#### 🏠Property Details")
         st.markdown("<p style='color: #888; font-size: 0.9em; margin-top: -10px;'>Adjust the parameters below:</p>", unsafe_allow_html=True)
-        
-        location = st.selectbox("📍 Location", sorted(locations))
+        # Model selector: show Decision Tree option only if artifact exists
+        model_choice = "Random Forest"
+        if dt_model is not None:
+            model_choice = st.selectbox("� Model", ["Random Forest", "Decision Tree"], index=0)
+        else:
+            st.caption("Using Random Forest (Decision Tree model not found)")
+
+        location = st.selectbox("�📍 Location", sorted(locations))
         total_sqft = st.number_input("📏 Total Sqft", min_value=300, max_value=10000, value=1000, step=50)
         
         col_s1, col_s2 = st.columns(2)
@@ -81,12 +91,20 @@ if model is not None:
                         loc_encoded = label_encoder.transform([location])[0]
                     else:
                         st.warning("Location not found in training data. Using 'other'.")
-                        loc_encoded = label_encoder.transform(['other'])[0] 
+                        loc_encoded = label_encoder.transform(['other'])[0]
                 except:
-                    loc_encoded = 0 
-                
+                    loc_encoded = 0
+
                 features = np.array([[loc_encoded, total_sqft, bath, bhk]])
-                prediction = model.predict(features)[0]
+                # Choose model based on user selection
+                selected_model = model
+                if 'model_choice' in locals() and model_choice == 'Decision Tree':
+                    if dt_model is not None:
+                        selected_model = dt_model
+                    else:
+                        st.warning("Decision Tree model not found on disk. Falling back to Random Forest.")
+
+                prediction = selected_model.predict(features)[0]
                 
                 st.markdown(
                     f"""
@@ -107,7 +125,7 @@ if model is not None:
                     for b in range(max(1, bhk-1), min(11, bhk+2)):
                         for ba in range(max(1, bath-1), min(11, bath+2)):
                             f_sens = np.array([[loc_encoded, total_sqft, ba, b]])
-                            p_sens = model.predict(f_sens)[0]
+                            p_sens = selected_model.predict(f_sens)[0]
                             sens_data.append({"BHK": b, "Bath": ba, "Price": p_sens})
                     
                     sens_df = pd.DataFrame(sens_data)
@@ -152,17 +170,26 @@ if model is not None:
         with tab2:
             st.markdown("#### Model Performance")
             col_m1, col_m2, col_m3 = st.columns(3)
-            col_m1.metric("Architecture", "Random Forest")
+            # Show architecture depending on which model is selected (or available)
+            arch_display = "Random Forest"
+            if 'model_choice' in locals() and model_choice == 'Decision Tree':
+                arch_display = "Decision Tree"
+            col_m1.metric("Architecture", arch_display)
             col_m2.metric("Accuracy (R²)", "76.0%")
             col_m3.metric("Avg Error", "₹ 23.2 Lakhs")
             
             st.divider()
             
             st.markdown("#### Factor Influence")
-            if hasattr(model, 'feature_importances_'):
+            # Use the selected model for feature importance when available
+            selected_for_importance = model
+            if 'model_choice' in locals() and model_choice == 'Decision Tree' and dt_model is not None:
+                selected_for_importance = dt_model
+
+            if hasattr(selected_for_importance, 'feature_importances_'):
                 importance_df = pd.DataFrame({
                     'Factor': columns,
-                    'Weight (%)': model.feature_importances_ * 100
+                    'Weight (%)': selected_for_importance.feature_importances_ * 100
                 }).sort_values(by='Weight (%)', ascending=False)
                 
                 # Interactive horizontal bar chart for feature importances
