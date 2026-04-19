@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+from agent import get_advisory
 
 st.set_page_config(
     page_title="PropAI: Intelligent Real Estate",
@@ -83,7 +84,7 @@ if label_encoder is not None and columns is not None:
         predict_clicked = st.button("Predict Price", type="primary", use_container_width=True)
 
     with col2:
-        tab1, tab2 = st.tabs(["💵 Valuation", "📊 Insights"])
+        tab1, tab2, tab3 = st.tabs(["💵 Valuation", "📊 Insights", "🤖 AI Advisor"])
         with tab1:
             if predict_clicked:
                 try:
@@ -214,3 +215,57 @@ if label_encoder is not None and columns is not None:
                 st.info("💡 **Insight:** Total Square ft is the most critical factor. This is why price doesn't change drastically when only BHK or Bathrooms are adjusted without changing the area.")
             else:
                 st.info("Feature importance is not available.")
+
+        with tab3:
+            st.markdown(
+                """
+                <div style="background: linear-gradient(135deg, rgba(0, 230, 118, 0.1), rgba(0, 0, 0, 0)); 
+                            padding: 25px; border-radius: 12px; border: 1px solid rgba(0, 230, 118, 0.2); margin-bottom: 25px;">
+                    <h3 style="margin-top:0; color:#00e676; font-weight: 600;">🤖 Agentic Investment Advisor</h3>
+                    <p style="color:#e0e0e0; font-size:1.05em; margin-bottom:0; line-height: 1.6;">
+                        Our <b>LangGraph-powered AI</b> autonomously reasons about your property value. 
+                        It integrates the ML model's prediction with real-time market trends via RAG to synthesize a professional, structured investment recommendation.
+                    </p>
+                </div>
+                """, unsafe_allow_html=True
+            )
+            
+            if st.button("✨ Generate AI Advisory Report", type="primary", use_container_width=True):
+                with st.status("🤖 Agent processing workflow...", expanded=True) as status:
+                    details = {
+                        "location": location,
+                        "total_sqft": total_sqft,
+                        "bath": bath,
+                        "bhk": bhk
+                    }
+                    
+                    st.write("🔍 `[Node: Valuation]` Valuing property based on ML model...")
+                    result = get_advisory(details)
+                    
+                    for step in result.get('steps', []):
+                        st.write(f"✅ {step}")
+                    
+                    status.update(label="✅ Advisory Report Successfully Generated!", state="complete", expanded=False)
+                
+                st.markdown("<br>", unsafe_allow_html=True)
+                
+                # Render report in a dedicated card-like wrapper
+                st.markdown(
+                    """
+                    <div style="background: rgba(25, 25, 25, 0.95); padding: 30px; border-radius: 12px; 
+                                border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                    """, unsafe_allow_html=True
+                )
+                
+                st.markdown(result['advisory_report'])
+                st.markdown("</div><br>", unsafe_allow_html=True)
+                
+                col_dl1, col_dl2, col_dl3 = st.columns([1,2,1])
+                with col_dl2:
+                    st.download_button(
+                        label="📥 Download Advisory Report (.md)",
+                        data=result['advisory_report'],
+                        file_name=f"PropMind_Agentic_Advisor_{location}.md",
+                        mime="text/markdown",
+                        use_container_width=True
+                    )

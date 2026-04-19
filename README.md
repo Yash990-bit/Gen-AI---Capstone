@@ -114,6 +114,12 @@ Gen-AI---Capstone/
 - 🔄 ±10% confidence interval (market low/high estimates)
 - 📊 Price per square foot calculation
 
+### **Agentic AI Advisory**
+- 🤖 **Agentic Workflow**: Autonomous multi-node orchestration using LangGraph.
+- 📚 **RAG Market Intelligence**: Retrieval-Augmented Generation utilizing Chroma/FAISS for real-time real estate trends.
+- 🧠 **Explicit State Management**: State tracking across valuation, context retrieval, and reporting steps.
+- 🎯 **Hallucination Control**: Strategically prompted (Llama 3.3 70B via Groq) with low temperature parameters for deterministic output.
+
 ### **Interactive UI**
 - 🏠 Four-page navigation (Home, Dashboard, AI Valuation, Analytics)
 - 🎨 Modern dark-themed interface with emerald accent colors
