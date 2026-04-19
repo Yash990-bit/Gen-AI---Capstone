@@ -6,3 +6,11 @@ plotly
 matplotlib
 seaborn
 altair
+langgraph
+langchain
+langchain-community
+langchain-groq
+langchain-huggingface
+sentence-transformers
+chromadb
+python-dotenv
